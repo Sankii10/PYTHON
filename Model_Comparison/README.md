@@ -113,32 +113,6 @@ imbalanced-learn
 ```
 
 ---
-
-## How to Run
-
-```bash
-# 1. Clone the repo
-git clone https://github.com/Sankii10/PYTHON.git
-cd PYTHON/Model_Comparison
-
-# 2. Install dependencies
-pip install pandas numpy scikit-learn xgboost imbalanced-learn matplotlib seaborn
-
-# 3. Add dataset
-# Download from Kaggle and place CSV at the path referenced in the script
-
-# 4. Run
-python epl_logistic_randomforest_xgboost.py
-```
-
----
-
-## Resume Bullet (for reference)
-
-> Built a 3-class EPL match outcome classifier (Home Win / Draw / Away Win) on 1,140 matches using Logistic Regression, Random Forest, and XGBoost; applied SMOTE for class imbalance and 5-fold Stratified Cross-Validation for robust benchmarking. Logistic Regression achieved the highest CV accuracy of **81.9%**, outperforming XGBoost (68.9%) and Random Forest (62.2%); identified shots on target and clear chances as top predictive features.
-
----
-
 ## Author
 
 **Sanket Gaikwad**  
