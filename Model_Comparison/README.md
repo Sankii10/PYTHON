@@ -1,121 +1,145 @@
-# Machine Learning Model Comparison Projects
+# EPL Match Outcome Prediction — Multi-Model Classifier Comparison
 
 ## Overview
 
-This directory contains projects that compare the performance of multiple Machine Learning algorithms on the same dataset. The purpose of these projects is to evaluate, benchmark, and identify the most suitable algorithm for a specific business problem using standardized evaluation metrics.
+This project builds and benchmarks three machine learning classification models to predict the outcome of English Premier League (EPL) matches — **Home Win**, **Draw**, or **Away Win** — using in-game performance statistics from the 2021–2024 seasons.
 
-Model comparison is a critical step in the machine learning lifecycle, helping data professionals select models that provide the best balance between accuracy, interpretability, scalability, and business value.
-
-## Objectives
-
-* Compare the performance of multiple machine learning algorithms.
-* Identify the most suitable model for a given dataset.
-* Evaluate model strengths and limitations.
-* Analyze predictive performance using standardized metrics.
-* Support data-driven model selection and business decision-making.
-
-## Algorithms Compared
-
-Projects in this folder may include comparisons among:
-
-* Logistic Regression
-* Support Vector Classifier (SVC)
-* Random Forest Classifier
-* Decision Tree Classifier
-* K-Nearest Neighbors (KNN)
-* XGBoost
-* Gradient Boosting
-* Ridge Regression
-* Support Vector Regression (SVR)
-
-## Project Workflow
-
-1. Data Collection
-2. Data Cleaning and Preprocessing
-3. Exploratory Data Analysis (EDA)
-4. Feature Engineering
-5. Model Development
-6. Hyperparameter Optimization
-7. Model Evaluation
-8. Performance Comparison
-9. Business Interpretation and Recommendations
-
-## Evaluation Metrics
-
-### Classification Projects
-
-* Accuracy Score
-* Precision
-* Recall
-* F1-Score
-* ROC-AUC Score
-* Confusion Matrix
-* Cross-Validation Score
-
-### Regression Projects
-
-* Mean Absolute Error (MAE)
-* Mean Squared Error (MSE)
-* Root Mean Squared Error (RMSE)
-* R² Score
-* Cross-Validation Score
-
-## Projects Included
-
-### English Premier League (EPL) Analytics
-
-**Algorithms Compared:**
-
-* Logistic Regression
-* Random Forest Classifier
-* XGBoost Classifier
-
-**Objective:**
-
-* Compare the predictive performance of multiple machine learning algorithms on football-related analytical data.
-* Identify the most effective model based on evaluation metrics and predictive accuracy.
-
-## Business Applications
-
-Model comparison projects can support:
-
-* Predictive Analytics
-* Customer Analytics
-* Risk Assessment
-* Sports Analytics
-* Healthcare Analytics
-* Financial Forecasting
-* Marketing Analytics
-* Business Intelligence
-
-## Key Learning Outcomes
-
-Through these projects, the following competencies are demonstrated:
-
-* Model Selection
-* Comparative Analytics
-* Performance Evaluation
-* Hyperparameter Optimization
-* Predictive Modeling
-* Business Insight Generation
-* Data-Driven Decision Making
-
-## Benefits of Model Comparison
-
-* Identifies the Best Performing Algorithm
-* Improves Model Reliability
-* Reduces Model Selection Bias
-* Supports Business Decision-Making
-* Enhances Predictive Accuracy
-* Provides Benchmarking Frameworks
+The core objective is not just to predict outcomes, but to **identify which algorithm generalises best** on multi-class sports analytics data, and to understand which in-game features drive predictive power.
 
 ---
 
-### Author
+## Dataset
 
-**Sanket Gaikwad**
-Business Analyst | Data Analytics | Machine Learning Enthusiast
+| Property | Detail |
+|---|---|
+| Source | [Kaggle – EPL Stats 2021–2024](https://www.kaggle.com/datasets/mohamadsallah5/english-premier-league-stats20212024) |
+| Records | 1,140 matches |
+| Features | 30 in-game stats (possession, shots, passes, corners, fouls, cards, etc.) |
+| Target | Match result: `h` = Home Win, `d` = Draw, `a` = Away Win |
+| Missing Values | `year` and `month` columns — 560 nulls (imputed with mode) |
+| Duplicates | 0 |
 
-### Repository Purpose
+---
 
-This repository showcases comparative machine learning studies and demonstrates the process of evaluating multiple algorithms to determine the most effective solution for real-world analytical and business problems.
+## Problem Statement
+
+Predicting football match outcomes is a **3-class imbalanced classification problem**. Draws are underrepresented relative to wins, making standard accuracy misleading. This project addresses that with SMOTE oversampling and evaluates models using both accuracy and F1-Score.
+
+---
+
+## Project Workflow
+
+```
+Data Loading → EDA & Cleaning → Feature Engineering
+→ Train-Test Split (80/20, stratified)
+→ SMOTE (handle class imbalance on training set)
+→ StandardScaler (feature normalisation)
+→ Model Training (3 algorithms)
+→ Evaluation (Accuracy, F1, Confusion Matrix)
+→ 5-Fold Stratified Cross-Validation
+→ Feature Importance Analysis
+```
+
+---
+
+## Models Compared
+
+| Model | Configuration |
+|---|---|
+| Logistic Regression | Multinomial, L2 penalty, C=1.0, max_iter=1000 |
+| Random Forest | 500 trees, max_features='sqrt', balanced_subsample |
+| XGBoost | 500 estimators, lr=0.05, max_depth=6, subsample=0.8 |
+
+---
+
+## Results
+
+### Test Set Performance
+
+| Model | Accuracy | Macro F1 | Weighted F1 |
+|---|---|---|---|
+| **Logistic Regression** | **81.1%** | **0.79** | **0.82** |
+| XGBoost | 68.0% | 0.59 | 0.66 |
+| Random Forest | 64.0% | 0.56 | 0.61 |
+
+### 5-Fold Stratified Cross-Validation
+
+| Model | CV Accuracy |
+|---|---|
+| **Logistic Regression** | **81.9%** |
+| XGBoost | 68.9% |
+| Random Forest | 62.2% |
+
+### Per-Class Performance — Logistic Regression (Best Model)
+
+| Class | Precision | Recall | F1-Score | Support |
+|---|---|---|---|---|
+| Home Win (0) | 0.90 | 0.83 | 0.86 | 99 |
+| Draw (1) | 0.61 | 0.71 | 0.65 | 51 |
+| Away Win (2) | 0.86 | 0.86 | 0.86 | 78 |
+
+---
+
+## Key Finding
+
+**Logistic Regression outperformed both ensemble models by a significant margin (+13–17% accuracy).**
+
+This is a counter-intuitive result worth noting. The likely explanation: after SMOTE and StandardScaler, the decision boundary between classes is approximately linear in feature space. XGBoost and Random Forest, being high-variance models, overfit on the SMOTE-synthetic samples during training, which hurts generalisation on real test data.
+
+The **Draw class** remains the hardest to predict across all models (F1: 0.65 vs 0.86 for wins) — consistent with the broader sports analytics literature, where draws are structurally ambiguous events.
+
+---
+
+## Feature Importance
+
+Feature importance was extracted from both Random Forest and XGBoost. Key predictive features:
+
+- `home_on` / `away_on` — shots on target (strongest signal)
+- `home_chances` / `away_chances` — clear goal-scoring opportunities
+- `home_possessions` / `away_possessions` — territorial dominance
+- `home_saves` / `away_saves` — goalkeeping intervention (correlates with pressure absorbed)
+
+---
+
+## Tech Stack
+
+```
+Python 3.13
+pandas, numpy
+scikit-learn (LogisticRegression, RandomForestClassifier, SMOTE, StratifiedKFold)
+xgboost
+matplotlib, seaborn
+imbalanced-learn
+```
+
+---
+
+## How to Run
+
+```bash
+# 1. Clone the repo
+git clone https://github.com/Sankii10/PYTHON.git
+cd PYTHON/Model_Comparison
+
+# 2. Install dependencies
+pip install pandas numpy scikit-learn xgboost imbalanced-learn matplotlib seaborn
+
+# 3. Add dataset
+# Download from Kaggle and place CSV at the path referenced in the script
+
+# 4. Run
+python epl_logistic_randomforest_xgboost.py
+```
+
+---
+
+## Resume Bullet (for reference)
+
+> Built a 3-class EPL match outcome classifier (Home Win / Draw / Away Win) on 1,140 matches using Logistic Regression, Random Forest, and XGBoost; applied SMOTE for class imbalance and 5-fold Stratified Cross-Validation for robust benchmarking. Logistic Regression achieved the highest CV accuracy of **81.9%**, outperforming XGBoost (68.9%) and Random Forest (62.2%); identified shots on target and clear chances as top predictive features.
+
+---
+
+## Author
+
+**Sanket Gaikwad**  
+[LinkedIn](http://www.linkedin.com/in/sanket-gaikwad-10) | [GitHub](https://github.com/Sankii10)
