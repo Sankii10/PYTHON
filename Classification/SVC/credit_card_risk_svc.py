@@ -1,7 +1,7 @@
 """
 THE FOLLOWING CODE IS WRITTEN BY :-
 NAME :- SANKET GAIKWAD
-DATASET :- CREDIT RISK DATASET(SOURCE :- KAGGLE)
+DATASET :- CREDIT RISK DATASET(SOURCE :- KAGGLE) https://www.kaggle.com/datasets/laotse/credit-risk-dataset
 
 """
 
